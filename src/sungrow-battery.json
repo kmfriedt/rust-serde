@@ -1,0 +1,51 @@
+{
+  "device_type": "battery",
+  "manufacturer": "sungrow",
+  "model": "UNSET",
+  "registers": {
+    "310059": {
+      "description": "System chargeable energy",
+      "exp": 3,
+      "frequency": 1,
+      "name": "system_chargable_energy",
+      "size": 2,
+      "type": "luint32",
+      "value": 0,
+      "tags": [],
+      "writeable": false
+    },
+    "310061": {
+      "description": "System dischargeable energy",
+      "exp": 3,
+      "frequency": 1,
+      "name": "system_dischargable_energy",
+      "size": 2,
+      "type": "luint32",
+      "value": 0,
+      "tags": [],
+      "writeable": false
+    },
+    "310055": {
+      "description": "System chargeable power",
+      "exp": 3,
+      "frequency": 1,
+      "name": "charge_power_limit",
+      "size": 2,
+      "type": "luint32",
+      "value": 0,
+      "tags": [],
+      "writeable": false
+    },
+    "310057": {
+      "description": "System dischargeable power",
+      "exp": 3,
+      "frequency": 1,
+      "name": "discharge_power_limit",
+      "size": 2,
+      "type": "luint32",
+      "value": 0,
+      "tags": [],
+      "writeable": false
+    }
+  }
+}
