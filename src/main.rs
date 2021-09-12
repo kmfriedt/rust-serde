@@ -7,7 +7,7 @@ extern crate serde;
 const PATH: &str = "/home/kfriedt/code/rust-serde/";
 
 #[derive(Serialize, Deserialize, Debug)]
-struct RawRegisterMap {
+struct RegisterMap {
     device_type: String,
     manufacturer: String,
     model: String,
@@ -75,30 +75,27 @@ fn serialize_primitive(){
     assert_eq!(x, xd);
 }
 
-fn register_example() {
-    let filename = "src/sungrow-battery.json";
-    let filepath: String = PATH.to_owned() + filename; // could use .to_owned() or .to_string() NOT .clone()
+fn battery_to_string(filepath: &str){
 
-
-    // checked to see if variables were still available
-    // println!("{}", filename);
-    // println!("{}", PATH);
-    // println!("{}", filepath);
-//*************************************************************
-    // // THIS WORKED WITH EITHER VERSION BELOW FO THE let reg_map BUT GOT A BUNCH OF OBJECTS
-    // // COULDN'T ACCESS THE OBJECTS DIRECTLY
-    // // With a string that is read from a file
-    // let contents = fs::read_to_string(filepath).unwrap(); // could add .as_ref() to get &str
-    // // println!("Contents: {}", contents);
+    // THIS WORKED WITH EITHER VERSION BELOW FO THE let reg_map BUT GOT A BUNCH OF OBJECTS
+    // COULDN'T ACCESS THE OBJECTS DIRECTLY
+    // With a string that is read from a file
+    let contents = fs::read_to_string(filepath).unwrap(); // could add .as_ref() to get &str
+    // println!("Contents: {}", contents);
+    // WITH THE ? HERE WE WOULD HAVE TO HAVE A RETURN TYPE Result<()>
     // let reg_map: serde_json::Value = serde_json::from_str(&contents)?; //if .unwrap().as_ref() then contents
-    // let reg_map: serde_json::Value = serde_json::from_str(&contents).expect("JSON was not well formatted"); //if .unwrap().as_ref() then contents
+    let v: serde_json::Value = serde_json::from_str(&contents).expect("JSON was not well formatted"); //if .unwrap().as_ref() then contents
 
-    // // println!("Device Type {}", v["device_type"]);
-    // // println!("registers {}", v["registers"]);
-    // // println!("first register {}", v["register"][0]);
 
-//****************************************************************
-    // use an open file and read from the file
+    println!("Device Type {}", v["device_type"]);
+    println!("registers {}", v["registers"]);
+    println!("first register {:?}", v["register"][0]); // returns null DOES NOT WORK
+
+
+    // Ok(()) // have to return () to use the ? operator in the serde_json::from_str(&contents)?
+}
+
+fn open_file_example(filepath: &str){
     // WITH THE FORMATTED JSON FILE IT WORKS
     let file = fs::File::open(filepath).expect("File should open read only");
 
@@ -106,7 +103,6 @@ fn register_example() {
     // let filename_2 = "src/old-battery.json";
     // let filepath_2: String = PATH.to_owned() + filename_2;
     // let file = fs::File::open(filepath_2).expect("File should open read only");
-
 
     let reader = BufReader::new(file);
     let reg_map: serde_json::Value = serde_json::from_reader(reader)
@@ -123,31 +119,45 @@ fn register_example() {
     println!("Registers: {}", reg_1);
     println!("Register 1: {}", reg_1[0]);
     println!("Register 1: {:?}", reg_1[0].get("details"));
-//*****************************************************************
-    // // HAD TO RE-FORMAT THE JSON FILE TO GET THE OBJECT
-    // // TRY GETTING OBJECTS
-    // let contents = fs::read_to_string(filepath).unwrap(); // could add .as_ref() to get &str
-    // let reg_map: RawRegisterMap = serde_json::from_str(&contents).expect("JSON was not well formatted"); //if .unwrap().as_ref() then contents
-    // println!("{:?}", reg_map);
-    //
-    // println!("Device Type: {:?}", reg_map.device_type);
-    // println!("Registers: {:?}", reg_map.registers);
-    // println!("First register address: {:?}", reg_map.registers[0].address);
+}
 
-    // Ok(()) // have to return () to use the ? operator in the serde_json::from_str(&contents)?
+fn battery_to_objects(filepath: &str){
+
+    // HAD TO RE-FORMAT THE JSON FILE TO GET THE OBJECT
+    // TRY GETTING OBJECTS
+    let contents = fs::read_to_string(filepath).unwrap(); // could add .as_ref() to get &str
+    let reg_map: RegisterMap = serde_json::from_str(&contents).expect("JSON was not well formatted"); //if .unwrap().as_ref() then contents
+    println!("{:?}", reg_map);
+
+    println!("Device Type: {:?}", reg_map.device_type);
+    println!("Registers: {:?}", reg_map.registers);
+    println!("First register address: {:?}", reg_map.registers[0].address);
+}
+
+fn register_example() {
+    let filename = "src/sungrow-battery.json";
+    let filepath: String = PATH.to_owned() + filename; // could use .to_owned() or .to_string() NOT .clone()
+    // example where a string from the json file is used
+    battery_to_string(&filepath);
+    // an example where the file is opened
+    open_file_example(&filepath);
+    // an example where the json file is transformed into a RegisterMap object
+    battery_to_objects(&filepath);
+
+
 }
 
 fn main() {
     let path_filename = "/home/kfriedt/code/rust-serde/src/example.json";
     // go over opening files in rust
 
-    // let contents = fs::read_to_string(path_filename); // Leaves this as a Result<>
-    // println!("With text:\n{:?}", contents.as_ref().unwrap()); // Have to unwrap the Result<>
-    // println!("Can use the path_filename again: {}", path_filename);
-    // // Need to convert the contents: Result<String> to a String?
-    // untyped_example(contents.as_ref().unwrap());
-    // untyped_str_example();
-    // serialize_primitive();
+    let contents = fs::read_to_string(path_filename); // Leaves this as a Result<>
+    println!("With text:\n{:?}", contents.as_ref().unwrap()); // Have to unwrap the Result<>
+    println!("Can use the path_filename again: {}", path_filename);
+    // Need to convert the contents: Result<String> to a String?
+    untyped_example(contents.as_ref().unwrap());
+    untyped_str_example();
+    serialize_primitive();
     register_example();
 
 }
