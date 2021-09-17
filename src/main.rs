@@ -2,6 +2,8 @@ use std::fs;
 use std::io::BufReader;
 use serde::{Serialize, Deserialize};
 use serde_json::{Result, Value};
+use std::collections::HashMap;
+
 extern crate serde;
 
 const PATH: &str = "/home/kfriedt/code/rust-serde/";
@@ -12,6 +14,14 @@ struct RegisterMap {
     manufacturer: String,
     model: String,
     registers: Vec<Register>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct RegisterMap2 {
+    device_type: String,
+    manufacturer: String,
+    model: String,
+    registers: HashMap<String, RegisterDetails>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -134,30 +144,45 @@ fn battery_to_objects(filepath: &str){
     println!("First register address: {:?}", reg_map.registers[0].address);
 }
 
-fn register_example() {
-    let filename = "src/sungrow-battery.json";
-    let filepath: String = PATH.to_owned() + filename; // could use .to_owned() or .to_string() NOT .clone()
-    // example where a string from the json file is used
-    battery_to_string(&filepath);
-    // an example where the file is opened
-    open_file_example(&filepath);
-    // an example where the json file is transformed into a RegisterMap object
-    battery_to_objects(&filepath);
+fn battery_to_objects_2(filepath: &str){
+    // TRY GETTING OBJECTS with original file
+    let contents = fs::read_to_string(filepath).unwrap(); // could add .as_ref() to get &str
+    let reg_map: RegisterMap2 = serde_json::from_str(&contents).expect("JSON was not well formatted"); //if .unwrap().as_ref() then contents
+    println!("{:?}", reg_map);
 
+    println!("Device Type: {:?}", reg_map.device_type);
+    println!("Registers: {:?}", reg_map.registers);
+    println!("First register name: {:?}", reg_map.registers["310059"].name);
+}
+
+fn register_example() {
+    // let filename = "src/sungrow-battery.json";
+    // let filepath: String = PATH.to_owned() + filename; // could use .to_owned() or .to_string() NOT .clone()
+    let filename2 = "src/old-battery.json";
+    let filepath2: String = PATH.to_owned() + filename2;
+
+    // // example where a string from the json file is used
+    // battery_to_string(&filepath);
+    // // an example where the file is opened
+    // open_file_example(&filepath);
+    // // an example where the json file is transformed into a RegisterMap object
+    // battery_to_objects(&filepath);
+    // trying to use the original improper JSON file
+    battery_to_objects_2(&filepath2);
 
 }
 
 fn main() {
-    let path_filename = "/home/kfriedt/code/rust-serde/src/example.json";
-    // go over opening files in rust
-
-    let contents = fs::read_to_string(path_filename); // Leaves this as a Result<>
-    println!("With text:\n{:?}", contents.as_ref().unwrap()); // Have to unwrap the Result<>
-    println!("Can use the path_filename again: {}", path_filename);
-    // Need to convert the contents: Result<String> to a String?
-    untyped_example(contents.as_ref().unwrap());
-    untyped_str_example();
-    serialize_primitive();
+    // let path_filename = "/home/kfriedt/code/rust-serde/src/example.json";
+    // // go over opening files in rust
+    //
+    // let contents = fs::read_to_string(path_filename); // Leaves this as a Result<>
+    // println!("With text:\n{:?}", contents.as_ref().unwrap()); // Have to unwrap the Result<>
+    // println!("Can use the path_filename again: {}", path_filename);
+    // // Need to convert the contents: Result<String> to a String?
+    // untyped_example(contents.as_ref().unwrap());
+    // untyped_str_example();
+    // serialize_primitive();
     register_example();
 
 }

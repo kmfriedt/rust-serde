@@ -9,7 +9,7 @@
       "frequency": 1,
       "name": "system_chargable_energy",
       "size": 2,
-      "type": "luint32",
+      "data_type": "luint32",
       "value": 0,
       "tags": [],
       "writeable": false
@@ -20,7 +20,7 @@
       "frequency": 1,
       "name": "system_dischargable_energy",
       "size": 2,
-      "type": "luint32",
+      "data_type": "luint32",
       "value": 0,
       "tags": [],
       "writeable": false
@@ -31,7 +31,7 @@
       "frequency": 1,
       "name": "charge_power_limit",
       "size": 2,
-      "type": "luint32",
+      "data_type": "luint32",
       "value": 0,
       "tags": [],
       "writeable": false
@@ -42,7 +42,7 @@
       "frequency": 1,
       "name": "discharge_power_limit",
       "size": 2,
-      "type": "luint32",
+      "data_type": "luint32",
       "value": 0,
       "tags": [],
       "writeable": false
